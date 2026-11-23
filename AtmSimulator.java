@@ -10,7 +10,7 @@ public class AtmSimulator {
             try {
                 return Integer.parseInt(scanner.nextLine().trim());
             } catch (NumberFormatException e) {
-                System.out.println("Please enter a valid number.");
+                System.out.println("Please type digits only.");
             }
         }
     }
@@ -21,24 +21,25 @@ public class AtmSimulator {
             int enteredPin = readNumber(scanner, "Enter PIN: ");
 
             if (enteredPin == pin) {
-                System.out.println("Login successful!");
+                System.out.println("Login successful.");
                 return true;
-            } else {
-                System.out.println("Wrong PIN.");
             }
+
+            System.out.println("Wrong PIN. Attempts left: " + (3 - i));
         }
 
+        System.out.println("Card blocked. Please contact your bank.");
         return false;
     }
 
     public static int deposit(int balance, int amount) {
 
         if (amount <= 0) {
-            System.out.println("Invalid deposit amount.");
+            System.out.println("Amount must be more than 0.");
         } else {
-            balance = balance + amount;
-            System.out.println("Deposit successful.");
-            System.out.println("New balance: Rs " + balance);
+            balance += amount;
+            System.out.println("Deposited Rs " + amount
+                    + ". New balance: Rs " + balance);
         }
 
         return balance;
@@ -46,14 +47,16 @@ public class AtmSimulator {
 
     public static int withdraw(int balance, int amount) {
 
-        if (amount <= 0 || amount % 100 != 0) {
-            System.out.println("Invalid withdrawal amount.");
+        if (amount <= 0) {
+            System.out.println("Amount must be more than 0.");
+        } else if (amount % 100 != 0) {
+            System.out.println("Amount must be a multiple of 100.");
         } else if (amount > balance) {
-            System.out.println("Insufficient balance.");
+            System.out.println("Not enough balance.");
         } else {
-            balance = balance - amount;
-            System.out.println("Withdrawal successful.");
-            System.out.println("New balance: Rs " + balance);
+            balance -= amount;
+            System.out.println("Please take your cash: Rs " + amount
+                    + ". New balance: Rs " + balance);
         }
 
         return balance;
@@ -63,11 +66,10 @@ public class AtmSimulator {
 
         Scanner scanner = new Scanner(System.in);
 
-        int pin = 1234;
+        int pin = 4321;
         int balance = 5000;
 
         if (!login(scanner, pin)) {
-            System.out.println("Card blocked.");
             scanner.close();
             return;
         }
@@ -76,43 +78,39 @@ public class AtmSimulator {
 
         while (running) {
 
-            System.out.println("\n===== ATM MENU =====");
-            System.out.println("1. Balance");
-            System.out.println("2. Deposit");
-            System.out.println("3. Withdraw");
-            System.out.println("4. Exit");
+            System.out.println();
+            System.out.println("1. Balance  2. Deposit  3. Withdraw  4. Exit");
 
-            int choice = readNumber(scanner, "Enter your choice: ");
+            int choice = readNumber(scanner, "Choose an option: ");
 
             switch (choice) {
 
                 case 1:
-                    System.out.println("Current balance: Rs " + balance);
+                    System.out.println("Balance: Rs " + balance);
                     break;
 
                 case 2:
                     int depositAmount = readNumber(
-                        scanner, "Enter deposit amount: "
-                    );
+                            scanner, "Amount to deposit: ");
 
                     balance = deposit(balance, depositAmount);
                     break;
 
                 case 3:
                     int withdrawAmount = readNumber(
-                        scanner, "Enter withdrawal amount: "
-                    );
+                            scanner, "Amount to withdraw: ");
 
                     balance = withdraw(balance, withdrawAmount);
                     break;
 
                 case 4:
                     running = false;
-                    System.out.println("Thank you for using ATM!");
+                    System.out.println("Thank you for banking with us.");
                     break;
 
                 default:
-                    System.out.println("Invalid choice.");
+                    System.out.println(
+                            "Please choose 1, 2, 3 or 4.");
             }
         }
 
